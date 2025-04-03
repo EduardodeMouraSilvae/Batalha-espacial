@@ -23,7 +23,7 @@ class Personagem(pg.sprite.Sprite):
         self.grupo = grupo
         self.grupo_inimigos = inimigos
         
-        self.velocidade = 5
+        self.velocidade = 10
     
     def lancar_arma(self, tecla):
         if tecla == pg.K_a:
@@ -60,13 +60,20 @@ class Bala(pg.sprite.Sprite):
         self.grupo_inimigos = grupo_inimigos
 
         self.velocidade = -10
+
+        self.tem_variavel = 0
     
     def update(self):
         self.rect.y += self.velocidade
         if self.rect.bottom < 0:
             self.grupo.remove(self)
+        if self.tem_variavel:
+                self.grupo.remove(self)
         if pg.sprite.spritecollide(self, self.grupo_inimigos, 1):
-            self.grupo.remove(self)
+            x, y = (self.rect.left, self.rect.top)
+            self.image = IMAGEM_BALA_ACERTO
+            self.rect.topleft = (x-(self.image.get_width()/2)), (y-(self.image.get_height()/2))
+            self.tem_variavel = 1
 
 
 
@@ -76,8 +83,8 @@ class Meteoro(pg.sprite.Sprite):
 
         self.image = IMAGEM_METEORO
         self.rect = self.image.get_rect()
-        self.rect.x = randint(0, LARGURA)
-        self.rect.bottom = -100
+        self.rect.x = randint(0, (LARGURA-self.image.get_width()))
+        self.rect.bottom = randint(-100, 0)
 
         self.grupo = grupo
 
@@ -91,7 +98,20 @@ class Meteoro(pg.sprite.Sprite):
            
 
 
+class CriarInimigos():
+    def __init__(self, num, grupo):
+        self.num = num
+        self.grupo = grupo
 
+    def criar_inimigo(self):
+        for i in range(0, self.num):
+            meteoro = Meteoro(self.grupo)
+            self.grupo.add(meteoro)
+    
+    def uptade(self):
+        if len(self.grupo) == 0:
+            self.num += 1
+            self.criar_inimigo()
 
 
 class Jogo():
@@ -102,13 +122,14 @@ class Jogo():
         self.grupo_personagem = pg.sprite.GroupSingle()
         self.grupo_disparos = pg.sprite.Group()
         self.grupo_inimigos = pg.sprite.Group()
-        self.grupo_inimigos
         
         self.nave = Personagem(IMAGEM_PERSONAGEM, self.grupo_disparos, self.grupo_inimigos)
-        self.meteoro = Meteoro(self.grupo_inimigos)
-
         self.grupo_personagem.add(self.nave)
-        self.grupo_inimigos.add(self.meteoro)
+
+        self.inimigos = CriarInimigos(1, self.grupo_inimigos)
+        self.inimigos.criar_inimigo()
+
+        MUSICA.play()
 
         self.rodar()
 
@@ -140,6 +161,7 @@ class Jogo():
             self.grupo_personagem.update(tecla)
             self.grupo_disparos.update()
             self.grupo_inimigos.update()
+            self.inimigos.uptade()
 
 
 Jogo()

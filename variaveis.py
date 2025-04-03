@@ -19,8 +19,13 @@ FUNDO = pg.transform.scale_by(fundo, 4)
 IMAGEM_PERSONAGEM = pg.image.load('imagens/playerShip1_blue.png')
 
 IMAGEM_BALA = pg.image.load('imagens/laserBlue01.png')
+IMAGEM_BALA_ACERTO = pg.image.load('imagens/laserBlue08.png')
 
 IMAGEM_METEORO = pg.image.load('imagens/meteorBrown_big1.png')
 
 # Sons
 SOM_DISPARO = pg.mixer.Sound('sons/sfx_laser1.ogg')
+
+
+# Músicas
+MUSICA = pg.mixer.Sound('sons/OutThere.ogg')
