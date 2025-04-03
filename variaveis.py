@@ -1,4 +1,5 @@
 # Arquivo com as variáveis do jogo
+# nomes: TIPO_CLASSE, ex.: IMAGEM_OBJETO
 import pygame as pg
 
 
@@ -18,6 +19,8 @@ FUNDO = pg.transform.scale_by(fundo, 4)
 IMAGEM_PERSONAGEM = pg.image.load('imagens/playerShip1_blue.png')
 
 IMAGEM_BALA = pg.image.load('imagens/laserBlue01.png')
+
+IMAGEM_METEORO = pg.image.load('imagens/meteorBrown_big1.png')
 
 # Sons
 SOM_DISPARO = pg.mixer.Sound('sons/sfx_laser1.ogg')
