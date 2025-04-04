@@ -21,6 +21,26 @@ class Vidas(pg.sprite.Sprite):
 
 
 
+class Recarga(pg.sprite.Sprite):
+    def __init__(self, grupo):
+        pg.sprite.Sprite.__init__(self)
+        self.image = IMAGEM_RECARGA
+        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect()
+        self.rect.x = randint(0, (LARGURA-self.image.get_width()))
+        self.rect.bottom = randint(-100, 0)
+
+        self.grupo = grupo
+
+        self.velocidade = 5
+    
+    def update(self):
+        self.rect.y += self.velocidade
+        if self.rect.top > ALTURA:
+            self.grupo.remove(self)
+
+
+
 class Personagem(pg.sprite.Sprite):
     def __init__(self, imagem, grupo, inimigos, vida):
         pg.sprite.Sprite.__init__(self)
@@ -150,6 +170,7 @@ class Jogo():
         self.grupo_disparos = pg.sprite.Group()
         self.grupo_inimigos = pg.sprite.Group()
         self.grupo_vidas = pg.sprite.Group()
+        self.grupo_demais = pg.sprite.Group()
         
         self.nave = Personagem(
             IMAGEM_PERSONAGEM,
@@ -161,6 +182,10 @@ class Jogo():
 
         self.inimigos = CriarInimigos(1, self.grupo_inimigos)
         self.inimigos.criar_inimigo()
+
+        recarga = Recarga(self.grupo_demais)
+
+        self.grupo_demais.add(recarga)
 
         MUSICA.play()
 
@@ -191,10 +216,12 @@ class Jogo():
             self.grupo_personagem.draw(self.janela_principal)
             self.grupo_inimigos.draw(self.janela_principal)
             self.grupo_vidas.draw(self.janela_principal)
+            self.grupo_demais.draw(self.janela_principal)
             
             self.grupo_personagem.update(tecla)
             self.grupo_disparos.update()
             self.grupo_inimigos.update()
+            self.grupo_demais.update()
             self.grupo_vidas.update()
             self.inimigos.uptade()
 

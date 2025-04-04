@@ -22,6 +22,8 @@ IMAGEM_VIDA = pg.image.load('imagens/playerLife1_blue.png')
 IMAGEM_BALA = pg.image.load('imagens/laserBlue01.png')
 IMAGEM_BALA_ACERTO = pg.image.load('imagens/laserBlue08.png')
 
+IMAGEM_RECARGA = pg.image.load('imagens/pill_blue.png')
+
 IMAGEM_METEORO = pg.image.load('imagens/meteorBrown_big1.png')
 
 # Sons
