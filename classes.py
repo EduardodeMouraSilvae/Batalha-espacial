@@ -11,6 +11,38 @@ pg.init()
 
 
 
+class Numero(pg.sprite.Sprite):
+    def __init__(self, grupo, pos, num):
+        pg.sprite.Sprite.__init__(self)
+
+        self.image = IMAGEM_NUM[num]
+        self.rect = self.image.get_rect()
+        self.rect.x = pos[0]
+        self.rect.bottom = pos[1]
+
+        self.grupo = grupo
+        self.grupo.add(self)
+
+
+
+class Exibir():
+    def __init__(self, grupo, pos, num):
+        self.grupo = grupo
+        self.pos = pos
+        self.num = num
+
+        self.criar_exibicao()
+    
+    def criar_exibicao(self):
+        x = self.pos[0]
+        y = self.pos[1]
+        for i in range(len(self.num)):
+            numero = Numero(self.grupo, [x, y], num=(int(self.num[i])))
+            self.grupo.add(numero)
+            x += 19 + 10
+
+
+
 class Vidas(pg.sprite.Sprite):
     def __init__(self, pos):
         pg.sprite.Sprite.__init__(self)
@@ -22,17 +54,21 @@ class Vidas(pg.sprite.Sprite):
 
 
 class Recarga(pg.sprite.Sprite):
-    def __init__(self, grupo):
+    def __init__(self, grupo, pos=[0,0], velocidade=5):
         pg.sprite.Sprite.__init__(self)
         self.image = IMAGEM_RECARGA
         self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
-        self.rect.x = randint(0, (LARGURA-self.image.get_width()))
-        self.rect.bottom = randint(-100, 0)
+        if pos != [0,0]:
+            self.rect.x = pos[0]
+            self.rect.bottom = pos[1]
+        else:
+            self.rect.x = randint(0, (LARGURA-self.image.get_width()))
+            self.rect.bottom = randint(-100, 0)
 
-        self.grupo = grupo
+        self.grupo = grupo 
 
-        self.velocidade = 5
+        self.velocidade = velocidade
     
     def update(self):
         self.rect.y += self.velocidade
@@ -42,7 +78,7 @@ class Recarga(pg.sprite.Sprite):
 
 
 class Personagem(pg.sprite.Sprite):
-    def __init__(self, imagem, grupo, inimigos, vida):
+    def __init__(self, imagem, grupo, inimigos, vida, recarga, demais):
         pg.sprite.Sprite.__init__(self)
 
         self.image = imagem
@@ -53,10 +89,15 @@ class Personagem(pg.sprite.Sprite):
         self.grupo = grupo
         self.grupo_inimigos = inimigos
         self.grupo_vida = vida
+        self.grupo_recarga = recarga
+        self.grupo_demais = demais
         
         self.velocidade = 10
+        self.disparos = 10
 
         self.controlar_vidas()
+        self.mostrar_balas()
+        self.mostrar_disparos()
     
     def lancar_arma(self, tecla):
         if tecla == pg.K_a:
@@ -75,6 +116,13 @@ class Personagem(pg.sprite.Sprite):
 
         self.grupo_vida.add(self.vida1, self.vida2, self.vida3)      
     
+    def mostrar_balas(self):
+        balas = Recarga(self.grupo_demais, [33, 100], 0)
+        self.grupo_demais.add(balas)
+
+    def mostrar_disparos(self):
+        exibir = Exibir(self.grupo_recarga, [75,100], str(self.disparos))
+    
     def update(self, tecla):
 
         if tecla == pg.K_LEFT:
@@ -91,6 +139,13 @@ class Personagem(pg.sprite.Sprite):
             for i in self.grupo_vida.sprites():
                 n.append(i)
             self.grupo_vida.remove(n[-1])
+        if pg.sprite.spritecollide(self, self.grupo_demais, 1):
+            print(self.grupo_recarga.sprites())
+            self.disparos += 1
+            self.grupo_recarga.empty()
+            self.mostrar_disparos()
+            print(self.grupo_recarga.sprites())
+
 
 
 
@@ -118,7 +173,7 @@ class Bala(pg.sprite.Sprite):
                 self.grupo.remove(self)
         if pg.sprite.spritecollide(self, self.grupo_inimigos, 1):
             x, y = (self.rect.left, self.rect.top)
-            self.image = IMAGEM_BALA_ACERTO
+            self.image = IMAGEM_BALA_ACERTO[randint(0,2)]
             self.rect.topleft = (x-(self.image.get_width()/2)), (y-(self.image.get_height()/2))
             self.tem_variavel = 1
 
@@ -170,6 +225,7 @@ class Jogo():
         self.grupo_disparos = pg.sprite.Group()
         self.grupo_inimigos = pg.sprite.Group()
         self.grupo_vidas = pg.sprite.Group()
+        self.grupo_recarga = pg.sprite.Group()
         self.grupo_demais = pg.sprite.Group()
         
         self.nave = Personagem(
@@ -177,6 +233,8 @@ class Jogo():
             self.grupo_disparos,
             self.grupo_inimigos,
             self.grupo_vidas,
+            self.grupo_recarga,
+            self.grupo_demais,
         )
         self.grupo_personagem.add(self.nave)
 
@@ -184,7 +242,6 @@ class Jogo():
         self.inimigos.criar_inimigo()
 
         recarga = Recarga(self.grupo_demais)
-
         self.grupo_demais.add(recarga)
 
         MUSICA.play()
@@ -216,11 +273,13 @@ class Jogo():
             self.grupo_personagem.draw(self.janela_principal)
             self.grupo_inimigos.draw(self.janela_principal)
             self.grupo_vidas.draw(self.janela_principal)
+            self.grupo_recarga.draw(self.janela_principal)
             self.grupo_demais.draw(self.janela_principal)
             
             self.grupo_personagem.update(tecla)
             self.grupo_disparos.update()
             self.grupo_inimigos.update()
+            self.grupo_recarga.update()
             self.grupo_demais.update()
             self.grupo_vidas.update()
             self.inimigos.uptade()
