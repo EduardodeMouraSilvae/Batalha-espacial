@@ -11,8 +11,18 @@ pg.init()
 
 
 
+class Vidas(pg.sprite.Sprite):
+    def __init__(self, pos):
+        pg.sprite.Sprite.__init__(self)
+        self.image = IMAGEM_VIDA
+        self.rect = self.image.get_rect()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+
+
+
 class Personagem(pg.sprite.Sprite):
-    def __init__(self, imagem, grupo, inimigos):
+    def __init__(self, imagem, grupo, inimigos, vida):
         pg.sprite.Sprite.__init__(self)
 
         self.image = imagem
@@ -22,8 +32,11 @@ class Personagem(pg.sprite.Sprite):
 
         self.grupo = grupo
         self.grupo_inimigos = inimigos
+        self.grupo_vida = vida
         
         self.velocidade = 10
+
+        self.controlar_vidas()
     
     def lancar_arma(self, tecla):
         if tecla == pg.K_a:
@@ -32,7 +45,15 @@ class Personagem(pg.sprite.Sprite):
             self.som_disparo()
 
     def som_disparo(self):
-        SOM_DISPARO.play().set_volume(0.5)         
+        SOM_DISPARO.play().set_volume(0.5)
+
+    def controlar_vidas(self):
+        y = 30
+        self.vida1 = Vidas((33, y))
+        self.vida2 = Vidas((76, y))
+        self.vida3 = Vidas((119, y))
+
+        self.grupo_vida.add(self.vida1, self.vida2, self.vida3)      
     
     def update(self, tecla):
 
@@ -44,6 +65,12 @@ class Personagem(pg.sprite.Sprite):
             self.rect.left = 0
         elif self.rect.right > LARGURA:
             self.rect.right = LARGURA
+        
+        if pg.sprite.spritecollide(self, self.grupo_inimigos, 1):
+            n = list()
+            for i in self.grupo_vida.sprites():
+                n.append(i)
+            self.grupo_vida.remove(n[-1])
 
 
 
@@ -93,7 +120,6 @@ class Meteoro(pg.sprite.Sprite):
     def update(self):
         self.rect.y += self.velocidade
         if self.rect.top > ALTURA:
-            print('Sim.')
             self.grupo.remove(self)
            
 
@@ -114,6 +140,7 @@ class CriarInimigos():
             self.criar_inimigo()
 
 
+
 class Jogo():
     def __init__(self):
         self.janela_principal = pg.display.set_mode((LARGURA, ALTURA))
@@ -122,8 +149,14 @@ class Jogo():
         self.grupo_personagem = pg.sprite.GroupSingle()
         self.grupo_disparos = pg.sprite.Group()
         self.grupo_inimigos = pg.sprite.Group()
+        self.grupo_vidas = pg.sprite.Group()
         
-        self.nave = Personagem(IMAGEM_PERSONAGEM, self.grupo_disparos, self.grupo_inimigos)
+        self.nave = Personagem(
+            IMAGEM_PERSONAGEM,
+            self.grupo_disparos,
+            self.grupo_inimigos,
+            self.grupo_vidas,
+        )
         self.grupo_personagem.add(self.nave)
 
         self.inimigos = CriarInimigos(1, self.grupo_inimigos)
@@ -157,10 +190,12 @@ class Jogo():
             self.grupo_disparos.draw(self.janela_principal)
             self.grupo_personagem.draw(self.janela_principal)
             self.grupo_inimigos.draw(self.janela_principal)
+            self.grupo_vidas.draw(self.janela_principal)
             
             self.grupo_personagem.update(tecla)
             self.grupo_disparos.update()
             self.grupo_inimigos.update()
+            self.grupo_vidas.update()
             self.inimigos.uptade()
 
 
