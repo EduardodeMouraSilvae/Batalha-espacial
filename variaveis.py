@@ -16,6 +16,12 @@ TITULO = 'Batalha Espacial'
 fundo = pg.image.load("imagens/fundo1.png")
 FUNDO = pg.transform.scale_by(fundo, 4)
 
+imagem_estrela1 = pg.image.load('imagens/star1.png')
+imagem_estrela2 = pg.image.load('imagens/star2.png')
+imagem_estrela3 = pg.image.load('imagens/star3.png')
+
+IMAGEM_ESTRELA = [imagem_estrela1, imagem_estrela2, imagem_estrela3]
+
 imagem_personagem = pg.image.load('imagens/playerShip1_blue.png')
 imagem_personagem1 = pg.image.load('imagens/playerShip1_damage1.png')
 IMAGEM_PERSONAGEM =[imagem_personagem, imagem_personagem1]

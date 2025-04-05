@@ -214,7 +214,7 @@ class Bala(pg.sprite.Sprite):
 
 
 class Meteoro(pg.sprite.Sprite):
-    def __init__(self, grupo):
+    def __init__(self, grupo, velocidade=5):
         pg.sprite.Sprite.__init__(self)
 
         self.image = IMAGEM_METEORO[randint(0,9)]
@@ -224,7 +224,7 @@ class Meteoro(pg.sprite.Sprite):
 
         self.grupo = grupo
 
-        self.velocidade = 5
+        self.velocidade = velocidade
     
     def update(self):
         self.rect.y += self.velocidade
@@ -238,17 +238,56 @@ class CriarInimigos():
         self.num = num
         self.grupo = grupo
 
-    def criar_inimigo(self):
+    def criar_inimigo(self, aceleracao=0):
+        velo = 5
         for i in range(0, self.num):
-            meteoro = Meteoro(self.grupo)
+            if aceleracao:
+                velo = randint(5, 25)
+            meteoro = Meteoro(self.grupo, velo)
             self.grupo.add(meteoro)
     
     def uptade(self):
-        if len(self.grupo) == 0:
+        if len(self.grupo) == 0 and self.num <= 2:
             self.num += 1
             self.criar_inimigo()
+        elif len(self.grupo) == 0 and self.num > 2:
+            self.num += 1
+            self.criar_inimigo(1)
 
 
+
+class Estrela(pg.sprite.Sprite):
+    def __init__(self, grupo):
+        pg.sprite.Sprite.__init__(self)
+        self.image = IMAGEM_ESTRELA[randint(0,2)]
+        self.rect = self.image.get_rect()
+        self.rect.x = randint(0, (LARGURA-self.image.get_width()))
+        self.rect.bottom = randint(-500, 0)
+
+        self.grupo = grupo
+
+        self.velocidade = 2
+    
+    def update(self):
+        self.rect.y += self.velocidade
+        if self.rect.top > ALTURA:
+            self.grupo.remove(self)
+
+
+
+class CriarEstrela():
+    def __init__(self, grupo):
+        self.num = randint(5, 8)
+        self.grupo = grupo
+
+    def criar_estrela(self):
+        for i in range(0, self.num):
+            estrela = Estrela(self.grupo)
+            self.grupo.add(estrela)
+    
+    def update(self):
+        if len(self.grupo) == 0:
+            self.criar_estrela()
 
 class Jogo():
     def __init__(self):
@@ -256,6 +295,7 @@ class Jogo():
         pg.display.set_caption(TITULO)
 
         self.grupo_personagem = pg.sprite.GroupSingle()
+        self.grupo_estrela = pg.sprite.Group()
         self.grupo_disparos = pg.sprite.Group()
         self.grupo_inimigos = pg.sprite.Group()
         self.grupo_vidas = pg.sprite.Group()
@@ -279,6 +319,9 @@ class Jogo():
 
         self.recarga = CriarRecarga(1, self.grupo_recarga)
         self.recarga.criar_recarga()
+
+        self.estrela = CriarEstrela(self.grupo_estrela)
+        self.estrela.criar_estrela()
 
         MUSICA.play()
 
@@ -305,6 +348,7 @@ class Jogo():
             pg.display.flip()
             self.janela_principal.blit(FUNDO, (0,0))
 
+            self.grupo_estrela.draw(self.janela_principal)
             self.grupo_disparos.draw(self.janela_principal)
             self.grupo_personagem.draw(self.janela_principal)
             self.grupo_inimigos.draw(self.janela_principal)
@@ -320,8 +364,10 @@ class Jogo():
             self.grupo_demais.update()
             self.grupo_vidas.update()
             self.grupo_exibir.update()
+            self.grupo_estrela.update()
             self.inimigos.uptade()
             self.recarga.uptade()
+            self.estrela.update()
 
 
 Jogo()
