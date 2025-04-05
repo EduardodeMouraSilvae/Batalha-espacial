@@ -26,6 +26,12 @@ imagem_personagem = pg.image.load('imagens/playerShip1_blue.png')
 imagem_personagem1 = pg.image.load('imagens/playerShip1_damage1.png')
 IMAGEM_PERSONAGEM =[imagem_personagem, imagem_personagem1]
 
+imagem_fogo1 = pg.image.load('imagens/fire13.png')
+imagem_fogo2 = pg.image.load('imagens/fire16.png')
+imagem_fogo3 = pg.image.load('imagens/fire17.png')
+
+IMAGEM_FOGO = [imagem_fogo1, imagem_fogo2, imagem_fogo3]
+
 IMAGEM_VIDA = pg.image.load('imagens/playerLife1_blue.png')
 
 IMAGEM_BALA = pg.image.load('imagens/laserBlue01.png')
@@ -79,6 +85,8 @@ IMAGEM_NUM = [
 
 # Sons
 SOM_DISPARO = pg.mixer.Sound('sons/sfx_laser1.ogg')
+
+SOM_IMPACTO = pg.mixer.Sound('sons/atari_boom.wav')
 
 # Músicas
 MUSICA = pg.mixer.Sound('sons/OutThere.ogg')

@@ -43,6 +43,28 @@ class Exibir():
 
 
 
+class FogoMotor(pg.sprite.Sprite):
+    def __init__(self, surface):
+        pg.sprite.Sprite.__init__(self)
+
+        self.surface = surface
+        self.indice = 0
+        self.imagem = IMAGEM_FOGO
+        self.image = self.imagem[self.indice]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.surface.left + int(self.surface[2]/2) - int(self.image.get_width()/2)
+        self.rect.y = self.surface.bottom
+        print(self.surface)
+    
+    def update(self):
+        if self.indice > 2.9:
+            self.indice = 0
+        print(int(self.indice))
+        self.image = self.imagem[int(self.indice)]
+        self.rect.x = self.surface.left + int(self.surface[2]/2) - int(self.image.get_width()/2)
+        self.rect.y = self.surface.bottom
+        self.indice += 0.25
+
 class Vidas(pg.sprite.Sprite):
     def __init__(self, pos):
         pg.sprite.Sprite.__init__(self)
@@ -98,6 +120,7 @@ class CriarRecarga():
                 self.tempo = randint(0, 40)
 
 
+
 class Personagem(pg.sprite.Sprite):
     def __init__(self, imagem, grupo, inimigos, vida, exibir, demais, recarga):
         pg.sprite.Sprite.__init__(self)
@@ -123,6 +146,9 @@ class Personagem(pg.sprite.Sprite):
         self.mostrar_balas()
         self.mostrar_disparos()
         self.mostrar_distancia()
+
+        self.fogo = FogoMotor(self.rect)
+        self.grupo_demais.add(self.fogo)
     
     def lancar_arma(self, tecla):
         if tecla == pg.K_a and self.disparos > 0:
@@ -210,6 +236,7 @@ class Bala(pg.sprite.Sprite):
             self.image = IMAGEM_BALA_ACERTO[randint(0,2)]
             self.rect.topleft = (x-(self.image.get_width()/2)), (y-(self.image.get_height()/2))
             self.tem_variavel = 1
+            SOM_IMPACTO.play().set_volume(0.3)
 
 
 
@@ -262,7 +289,7 @@ class Estrela(pg.sprite.Sprite):
         self.image = IMAGEM_ESTRELA[randint(0,2)]
         self.rect = self.image.get_rect()
         self.rect.x = randint(0, (LARGURA-self.image.get_width()))
-        self.rect.bottom = randint(-500, 0)
+        self.rect.bottom = randint(-900, 0)
 
         self.grupo = grupo
 
