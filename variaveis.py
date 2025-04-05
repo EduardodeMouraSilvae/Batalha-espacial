@@ -16,13 +16,17 @@ TITULO = 'Batalha Espacial'
 fundo = pg.image.load("imagens/fundo1.png")
 FUNDO = pg.transform.scale_by(fundo, 4)
 
-IMAGEM_PERSONAGEM = pg.image.load('imagens/playerShip1_blue.png')
+imagem_personagem = pg.image.load('imagens/playerShip1_blue.png')
+imagem_personagem1 = pg.image.load('imagens/playerShip1_damage1.png')
+IMAGEM_PERSONAGEM =[imagem_personagem, imagem_personagem1]
+
 IMAGEM_VIDA = pg.image.load('imagens/playerLife1_blue.png')
 
 IMAGEM_BALA = pg.image.load('imagens/laserBlue01.png')
 imagem_bala_acerto1 = pg.image.load('imagens/laserBlue08.png')
 imagem_bala_acerto2 = pg.image.load('imagens/laserBlue09.png')
 imagem_bala_acerto3 = pg.image.load('imagens/laserBlue10.png')
+
 IMAGEM_BALA_ACERTO = [
     imagem_bala_acerto1,
     imagem_bala_acerto2,
@@ -31,7 +35,23 @@ IMAGEM_BALA_ACERTO = [
 
 IMAGEM_RECARGA = pg.image.load('imagens/pill_blue.png')
 
-IMAGEM_METEORO = pg.image.load('imagens/meteorBrown_big1.png')
+imagem_meteoro1 = pg.image.load('imagens/meteorBrown_big1.png')
+imagem_meteoro2 = pg.image.load('imagens/meteorBrown_big2.png')
+imagem_meteoro3 = pg.image.load('imagens/meteorBrown_big3.png')
+imagem_meteoro4 = pg.image.load('imagens/meteorBrown_big4.png')
+imagem_meteoro5 = pg.image.load('imagens/meteorBrown_med1.png')
+imagem_meteoro6 = pg.image.load('imagens/meteorBrown_med3.png')
+imagem_meteoro7 = pg.image.load('imagens/meteorBrown_small1.png')
+imagem_meteoro8 = pg.image.load('imagens/meteorBrown_small2.png')
+imagem_meteoro9 = pg.image.load('imagens/meteorBrown_tiny1.png')
+imagem_meteoro10 = pg.image.load('imagens/meteorBrown_tiny2.png')
+
+IMAGEM_METEORO = [
+    imagem_meteoro1, imagem_meteoro2, imagem_meteoro3,
+    imagem_meteoro4, imagem_meteoro5, imagem_meteoro6,
+    imagem_meteoro7, imagem_meteoro8, imagem_meteoro9,
+    imagem_meteoro10,
+]
 
 imagem_num_0 = pg.image.load('imagens/numeral0.png')
 imagem_num_1 = pg.image.load('imagens/numeral1.png')
@@ -53,7 +73,6 @@ IMAGEM_NUM = [
 
 # Sons
 SOM_DISPARO = pg.mixer.Sound('sons/sfx_laser1.ogg')
-
 
 # Músicas
 MUSICA = pg.mixer.Sound('sons/OutThere.ogg')
