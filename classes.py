@@ -54,16 +54,16 @@ class FogoMotor(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.surface.left + int(self.surface[2]/2) - int(self.image.get_width()/2)
         self.rect.y = self.surface.bottom
-        print(self.surface)
     
     def update(self):
         if self.indice > 2.9:
             self.indice = 0
-        print(int(self.indice))
         self.image = self.imagem[int(self.indice)]
         self.rect.x = self.surface.left + int(self.surface[2]/2) - int(self.image.get_width()/2)
         self.rect.y = self.surface.bottom
         self.indice += 0.25
+
+
 
 class Vidas(pg.sprite.Sprite):
     def __init__(self, pos):
@@ -122,7 +122,7 @@ class CriarRecarga():
 
 
 class Personagem(pg.sprite.Sprite):
-    def __init__(self, imagem, grupo, inimigos, vida, exibir, demais, recarga):
+    def __init__(self, imagem, grupo, inimigos, vida, exibir, demais, recarga, outros):
         pg.sprite.Sprite.__init__(self)
 
         self.imagem = imagem
@@ -137,10 +137,12 @@ class Personagem(pg.sprite.Sprite):
         self.grupo_exibir = exibir
         self.grupo_demais = demais
         self.grupo_recarga = recarga
+        self.grupo_outros = outros
         
         self.velocidade = 10
-        self.disparos = 10
+        self.disparos = 100
         self.distancia = 0
+        self.sim = True
 
         self.controlar_vidas()
         self.mostrar_balas()
@@ -169,8 +171,9 @@ class Personagem(pg.sprite.Sprite):
         self.grupo_vida.add(self.vida1, self.vida2, self.vida3)      
     
     def mostrar_balas(self):
-        balas = Recarga(self.grupo_demais, [33, 100], 0)
-        self.grupo_demais.add(balas)
+        if self.sim:
+            balas = Recarga(self.grupo_outros, [33, 100], 0)
+            self.grupo_outros.add(balas)
 
     def mostrar_disparos(self):
         exibir = Exibir(self.grupo_exibir, [75,100], str(self.disparos))
@@ -316,6 +319,66 @@ class CriarEstrela():
         if len(self.grupo) == 0:
             self.criar_estrela()
 
+
+class JogoPerdeu():
+    def __init__(self):
+        self.janela_principal = pg.display.set_mode((LARGURA, ALTURA))
+        pg.display.set_caption(TITULO)
+
+        self.grupo_personagem = pg.sprite.GroupSingle()
+        self.grupo_estrela = pg.sprite.Group()
+        self.grupo_disparos = pg.sprite.Group()
+        self.grupo_inimigos = pg.sprite.Group()
+        self.grupo_vidas = pg.sprite.Group()
+        self.grupo_recarga = pg.sprite.Group()
+        self.grupo_exibir = pg.sprite.Group()
+        self.grupo_demais = pg.sprite.Group()
+        self.grupo_outros = pg.sprite.Group()
+        
+        self.nave = Personagem(
+            IMAGEM_PERSONAGEM,
+            self.grupo_disparos,
+            self.grupo_inimigos,
+            self.grupo_vidas,
+            self.grupo_exibir,
+            self.grupo_demais,
+            self.grupo_recarga,
+            self.grupo_outros,
+        )
+        self.grupo_personagem.add(self.nave)
+
+        self.estrela = CriarEstrela(self.grupo_estrela)
+        self.estrela.criar_estrela()
+
+        MUSICA.play()
+
+        self.rodar()
+
+    def rodar(self):
+        relogio = pg.time.Clock()
+        continuar = True
+        while continuar:
+            relogio.tick(24)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    continuar = False
+                    pg.quit()
+                    exit()
+            
+            pg.display.flip()
+            self.janela_principal.blit(FUNDO, (0,0))
+
+            self.grupo_estrela.draw(self.janela_principal)
+            self.grupo_personagem.draw(self.janela_principal)
+           
+            self.grupo_demais.draw(self.janela_principal)
+            
+            self.grupo_demais.update()
+            self.grupo_estrela.update()
+            self.estrela.update()
+           
+
+
 class Jogo():
     def __init__(self):
         self.janela_principal = pg.display.set_mode((LARGURA, ALTURA))
@@ -329,6 +392,7 @@ class Jogo():
         self.grupo_recarga = pg.sprite.Group()
         self.grupo_exibir = pg.sprite.Group()
         self.grupo_demais = pg.sprite.Group()
+        self.grupo_outros = pg.sprite.Group()
         
         self.nave = Personagem(
             IMAGEM_PERSONAGEM,
@@ -338,6 +402,7 @@ class Jogo():
             self.grupo_exibir,
             self.grupo_demais,
             self.grupo_recarga,
+            self.grupo_outros,
         )
         self.grupo_personagem.add(self.nave)
 
@@ -383,6 +448,7 @@ class Jogo():
             self.grupo_recarga.draw(self.janela_principal)
             self.grupo_exibir.draw(self.janela_principal)
             self.grupo_demais.draw(self.janela_principal)
+            self.grupo_outros.draw(self.janela_principal)
             
             self.grupo_personagem.update(tecla)
             self.grupo_disparos.update()
@@ -392,9 +458,15 @@ class Jogo():
             self.grupo_vidas.update()
             self.grupo_exibir.update()
             self.grupo_estrela.update()
+            self.grupo_outros.update()
             self.inimigos.uptade()
             self.recarga.uptade()
             self.estrela.update()
+
+            if len(self.nave.grupo_vida.sprites()) == 0:
+                continuar = False
+                JogoPerdeu()
+
 
 
 Jogo()
